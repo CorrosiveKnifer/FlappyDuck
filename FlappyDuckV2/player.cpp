@@ -54,7 +54,7 @@ void
 Player::Flutter()
 {
 	m_pSprite->SetAngle(-45);
-	m_dy = -350;
+	m_dy = -330;
 	m_dx = 0;
 }
 

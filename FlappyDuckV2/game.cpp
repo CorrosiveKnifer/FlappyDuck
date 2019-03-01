@@ -5,6 +5,7 @@
 #include "player.h"
 #include "inputhandler.h"
 #include "platform.h"
+#include "pipes.h"
 
 // Library includes:
 #include <cassert>
@@ -100,6 +101,15 @@ Game::Initialise()
 	m_hitableEntities.push_back(p);
 
 	m_pStartText = m_pBackBuffer->CreateMessage("0");
+
+	Pipes* p1 = new Pipes();
+	Sprite* temp1 = m_pBackBuffer->CreateTexture("assets\\pipe.png");
+	Sprite* temp2 = m_pBackBuffer->CreateTexture("assets\\pipe.png");
+	p1->Initialise(temp1, temp2);
+	p1->SetGapSize(175);
+	p1->SetGapHeight(w);
+	p1->SetPipeX(300);
+	m_hitableEntities.push_back(p1);
 
 	return true;
 }
