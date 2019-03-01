@@ -6,6 +6,7 @@
 Player::Player()
 : m_dAng(0)
 , MAX_ANGLE(90)
+, m_score(0)
 {
 
 }
@@ -52,7 +53,7 @@ Player::Draw(BackBuffer& backBuffer)
 void
 Player::Flutter()
 {
-	m_pSprite->SetAngle(-30);
+	m_pSprite->SetAngle(-45);
 	m_dy = -350;
 	m_dx = 0;
 }
@@ -61,4 +62,9 @@ void
 Player::Score()
 {
 	m_score++;
+}
+int
+Player::GetScore()
+{
+	return m_score;
 }

@@ -18,6 +18,7 @@ public:
 	void Flutter();
 
 	void Score();
+	int GetScore();
 
 protected:
 private:

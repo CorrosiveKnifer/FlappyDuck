@@ -163,7 +163,7 @@ Game::Process(float deltaTime)
 			entity->Process(deltaTime);
 		}
 	}
-	m_pStartText->SetCoords( (m_width - m_pStartText->GetWidth())/2, 150);
+	m_pStartText->SetCoords( (m_width - m_pStartText->GetWidth())/2, 125);
 }
 
 void
@@ -204,4 +204,8 @@ void
 Game::PlayerScores()
 {
 	m_pPlayerObject->Score();
+	Sprite* temp = m_pBackBuffer->CreateMessage(std::to_string(m_pPlayerObject->GetScore()));
+	temp->SetCoords((m_width - m_pStartText->GetWidth()) / 2, 125);
+	delete m_pStartText;
+	m_pStartText = temp;
 }
