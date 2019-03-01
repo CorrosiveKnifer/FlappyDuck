@@ -1,6 +1,7 @@
 // Local includes:
 #include "texturemanager.h"
 #include "texture.h"
+#include "message.h"
 
 // Library includes:
 #include <SDL.h>
@@ -42,6 +43,25 @@ TextureManager::GetTexture(const char* pcFilename)
 		pTexture = m_pLoadedTextures[pcFilename];
 	}
 
-	return (pTexture);
+	return pTexture;
 }
+Message*
+TextureManager::GetMessage(TTF_Font* pFont, const char* msg, SDL_Color rgb, int size)
+{
+	Message* pMessage = 0;
 
+	if (m_pMessageTextures.find(msg) == m_pMessageTextures.end())
+	{
+		// Not already loaded...
+		pMessage = new Message();
+		pMessage->Initialise(pFont, msg, rgb, size, m_pRenderer);
+		m_pMessageTextures[msg] = pMessage;
+	}
+	else
+	{
+		// Is already loaded...
+		pMessage = m_pMessageTextures[msg];
+	}
+
+	return pMessage;
+}

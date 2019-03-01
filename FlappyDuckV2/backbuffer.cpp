@@ -3,6 +3,7 @@
 #include "texturemanager.h"
 #include "sprite.h"
 #include "texture.h"
+#include "message.h"
 
 // Library includes:
 #include <SDL.h>
@@ -20,7 +21,7 @@ BackBuffer::BackBuffer()
 , m_clearGreen(0xFF)
 , m_clearBlue(0xFF)
 , m_pFont(0)
-, m_FontSize(20)
+, m_FontSize(46)
 {
 
 }
@@ -81,8 +82,7 @@ BackBuffer::Initialise(int width, int height)
 
 	SDL_SetHint(SDL_HINT_RENDER_SCALE_QUALITY, "1");
 	m_pFont = TTF_OpenFont("assets\\OpenSans.ttf", m_FontSize);
-	m_fontColour = { 255, 255, 255 };
-	
+	m_fontColour = { 255, 255, 255 , 0};
 	return true;
 }
 
@@ -108,7 +108,7 @@ BackBuffer::SetClearColour(unsigned char r, unsigned char g, unsigned char b)
 }
 
 Sprite*
-BackBuffer::CreateSprite(const char* pcFilename)
+BackBuffer::CreateTexture(const char* pcFilename)
 {
 	assert(m_pTextureManager);
 
@@ -117,7 +117,20 @@ BackBuffer::CreateSprite(const char* pcFilename)
 	Sprite* pSprite = new Sprite();
 	pSprite->Initialise(*pTexture);
 
-	return (pSprite);
+	return pSprite;
+}
+
+Sprite*
+BackBuffer::CreateMessage(std::string msg)
+{
+	assert(m_pTextureManager);
+
+	Message* pMessage = m_pTextureManager->GetMessage(m_pFont, msg.c_str(), m_fontColour, m_FontSize);
+
+	Sprite* pSprite = new Sprite();
+	pSprite->Initialise(*pMessage);
+
+	return pSprite;
 }
 
 void
@@ -125,27 +138,16 @@ BackBuffer::DrawSprite(Sprite& sprite)
 {
 	SDL_Rect dest;
 
-
 	dest.x = sprite.GetX();
 	dest.y = sprite.GetY();
 	dest.w = sprite.GetWidth();
 	dest.h = sprite.GetHeight();
-
-	SDL_RenderCopyEx(m_pRenderer, sprite.GetTexture()->GetTexture(), 0, &dest, sprite.GetAngle(), NULL, SDL_FLIP_NONE);
-}
-
-void 
-BackBuffer::RenderText(std::string msg, int x, int y)
-{
-	SDL_Surface* surfaceMessage = TTF_RenderText_Solid(m_pFont, msg.c_str(), m_fontColour);
-	SDL_Texture* message = SDL_CreateTextureFromSurface(m_pRenderer, surfaceMessage);
-
-	SDL_Rect Message_rect; //create a rect
-	Message_rect.x = 0;  //controls the rect's x coordinate 
-	Message_rect.y = 0; // controls the rect's y coordinte
-	Message_rect.w = msg.size() * m_FontSize; // controls the width of the rect
-	Message_rect.h = msg.size() * m_FontSize/3; // controls the height of the rect
-
-	SDL_RenderCopy(m_pRenderer, message, NULL, &Message_rect);
-
+	if (sprite.GetMessage() == 0)
+	{
+		SDL_RenderCopyEx(m_pRenderer, sprite.GetTexture()->GetTexture(), 0, &dest, sprite.GetAngle(), NULL, SDL_FLIP_NONE);
+	}
+	else
+	{
+		SDL_RenderCopyEx(m_pRenderer, sprite.GetMessage()->GetTexture(), 0, &dest, sprite.GetAngle(), NULL, SDL_FLIP_NONE);
+	}
 }

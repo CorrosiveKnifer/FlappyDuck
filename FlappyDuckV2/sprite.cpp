@@ -4,9 +4,11 @@
 // Local includes:
 #include "backbuffer.h"
 #include "texture.h"
+#include "message.h"
 
 Sprite::Sprite()
 : m_pTexture(0)
+, m_pMessage(0)
 , m_x(0)
 , m_y(0)
 , m_width(0)
@@ -34,6 +36,17 @@ Sprite::Initialise(Texture& texture)
 	return (true);
 }
 
+bool
+Sprite::Initialise(Message& message)
+{
+	m_pMessage = &message;
+
+	m_width = m_pMessage->GetWidth();
+	m_height = m_pMessage->GetHeight();
+
+	return true;
+}
+
 void 
 Sprite::Process(float deltaTime)
 {
@@ -58,6 +71,13 @@ Sprite::SetY(int y)
 {
 	m_y = y;
 	m_centerY = y + GetHeight() / 2;
+}
+
+void 
+Sprite::SetCoords(int x, int y)
+{
+	SetX(x);
+	SetY(y);
 }
 
 int
@@ -113,17 +133,23 @@ Sprite::SetHandleCenter()
 Texture* 
 Sprite::GetTexture()
 {
-	return (m_pTexture);
+	return m_pTexture;
+}
+
+Message*
+Sprite::GetMessage()
+{
+	return m_pMessage;
 }
 
 int 
 Sprite::GetWidth() const
 {
-	return (m_width);
+	return m_width;
 }
 
 int
 Sprite::GetHeight() const
 {
-	return (m_height);
+	return m_height;
 }

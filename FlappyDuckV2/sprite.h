@@ -3,6 +3,7 @@
 // Forward Declarations:
 class BackBuffer;
 class Texture;
+class Message;
 
 class Sprite
 {
@@ -12,12 +13,15 @@ public:
 	~Sprite();
 
 	bool Initialise(Texture& texture);
+	bool Initialise(Message& message);
 
 	void Process(float deltaTime);
 	void Draw(BackBuffer& backbuffer);
 
 	void SetX(int x);
 	void SetY(int y);
+
+	void SetCoords(int x, int y);
 
 	int GetX() const;
 	int GetY() const;
@@ -34,6 +38,7 @@ public:
 	int GetHeight() const;
 
 	Texture* GetTexture();
+	Message* GetMessage();
 
 protected:
 
@@ -46,6 +51,7 @@ public:
 
 protected:
 	Texture* m_pTexture;
+	Message* m_pMessage;
 	int m_x;
 	int m_y;
 

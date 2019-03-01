@@ -21,7 +21,6 @@ public:
 	bool GameLoop();
 	void Quit();
 	void PlayerFlutter();
-
 protected:
 	void Process(float deltaTime);
 	void Draw(BackBuffer& backBuffer);
@@ -32,6 +31,7 @@ private:
 
 	Game();
 
+	void PlayerScores();
 	//Member Data:
 public:
 
@@ -54,6 +54,10 @@ protected:
 	int m_FPS;
 	int m_numUpdates;
 	bool m_drawDebugInfo;
+	int m_width;
+	int m_height;
+
+	Sprite* m_pStartText;
 
 private:
 

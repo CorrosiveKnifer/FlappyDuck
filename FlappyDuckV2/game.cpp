@@ -26,6 +26,8 @@ Game::Game()
 , m_lastTime(0)
 , m_lag(0)
 , m_pPlayerObject(0)
+, m_width(0)
+, m_height(0)
 {
 
 }
@@ -67,11 +69,11 @@ Game::~Game()
 bool 
 Game::Initialise()
 {
-	const int width = 414;
-	const int height = 736;
+	m_width = 414;
+	m_height = 736;
 
 	m_pBackBuffer = new BackBuffer();
-	if (!m_pBackBuffer->Initialise(width, height))
+	if (!m_pBackBuffer->Initialise(m_width, m_height))
 	{
 		return false;
 	}
@@ -85,17 +87,20 @@ Game::Initialise()
 	m_lastTime = SDL_GetTicks();
 	m_lag = 0.0f;
 	
-	m_pBackgroundSprite = m_pBackBuffer->CreateSprite("assets\\background.png");
+	m_pBackgroundSprite = m_pBackBuffer->CreateTexture("assets\\background.png");
 	m_pPlayerObject = new Player();
-	m_pPlayerObject->Initalise(m_pBackBuffer->CreateSprite("assets\\player.png"));
-	int w = (width - m_pPlayerObject->GetWidth()) / 2;
-	int h = (height - m_pPlayerObject->GetHeight()) / 2;
+	m_pPlayerObject->Initalise(m_pBackBuffer->CreateTexture("assets\\player.png"));
+	int w = (m_width - m_pPlayerObject->GetWidth()) / 2;
+	int h = (m_height - m_pPlayerObject->GetHeight()) / 2;
 	m_pPlayerObject->SetPosition(w, h);
 
 	Platform* p = new Platform();
-	p->Initialise(m_pBackBuffer->CreateSprite("assets\\platform.png"));
+	p->Initialise(m_pBackBuffer->CreateTexture("assets\\platform.png"));
 	p->SetPositionY(736 - p->GetHeight());
 	m_hitableEntities.push_back(p);
+
+	m_pStartText = m_pBackBuffer->CreateMessage("0");
+
 	return true;
 }
 
@@ -158,6 +163,7 @@ Game::Process(float deltaTime)
 			entity->Process(deltaTime);
 		}
 	}
+	m_pStartText->SetCoords( (m_width - m_pStartText->GetWidth())/2, 150);
 }
 
 void
@@ -175,7 +181,8 @@ Game::Draw(BackBuffer& backBuffer)
 	}
 
 	m_pPlayerObject->Draw(backBuffer);
-	backBuffer.RenderText("THIS IS A TEST", 0, 0);
+
+	m_pStartText->Draw(backBuffer);
 
 	backBuffer.Present();
 }
@@ -190,4 +197,11 @@ void
 Game::PlayerFlutter()
 {
 	m_pPlayerObject->Flutter();
+	PlayerScores();
+}
+
+void
+Game::PlayerScores()
+{
+	m_pPlayerObject->Score();
 }

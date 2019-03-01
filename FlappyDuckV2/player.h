@@ -17,6 +17,8 @@ public:
 	void Draw(BackBuffer& backBuffer);
 	void Flutter();
 
+	void Score();
+
 protected:
 private:
 	//Member Data:
@@ -24,7 +26,7 @@ public:
 protected:
 	float m_dAng;
 	bool m_isFalling;
-
+	int m_score;
 private:
 	const float MAX_ANGLE;
 };

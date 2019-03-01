@@ -2,13 +2,12 @@
 
 // Library includes:
 #include <string>
+#include <SDL.h>
 #include <SDL_ttf.h>
 
 // Forward Declarations:
 class TextureManager;
 class Sprite;
-struct SDL_Window;
-struct SDL_Renderer;
 
 class BackBuffer 
 {
@@ -21,7 +20,8 @@ public:
 	void Clear();
 	void Present();
 	void SetClearColour(unsigned char r, unsigned char g, unsigned char b);
-	Sprite* CreateSprite(const char* pcFilename);
+	Sprite* CreateTexture(const char* pcFilename);
+	Sprite* CreateMessage(std::string msg);
 	void DrawSprite(Sprite& sprite);
 	void RenderText(std::string msg, int x, int y);
 

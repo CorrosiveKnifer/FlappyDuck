@@ -56,3 +56,9 @@ Player::Flutter()
 	m_dy = -350;
 	m_dx = 0;
 }
+
+void
+Player::Score()
+{
+	m_score++;
+}
