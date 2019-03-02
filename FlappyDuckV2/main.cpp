@@ -22,6 +22,6 @@ int main(int argc, char** argv)
 	}
 
 	Game::DestroyInstance();
-
+	_CrtDumpMemoryLeaks();
 	return 0;
 }

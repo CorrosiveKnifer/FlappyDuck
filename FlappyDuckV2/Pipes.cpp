@@ -11,6 +11,7 @@ Pipes::Pipes()
 	, m_pLowerPipe(0)
 	, m_gapSize(0)
 	, m_gapH(0)
+	, m_pipeX(0)
 	, m_scoredUpon(false)
 {
 
@@ -25,12 +26,12 @@ Pipes::~Pipes()
 }
 
 bool 
-Pipes::Initialise(Sprite* upper, Sprite* lower)
+Pipes::Initialise(Sprite* base, Sprite* upper, Sprite* lower)
 {
 	upper->SetAngle(180);
 	m_pUpperPipe = new Entity();
 	m_pLowerPipe = new Entity();
-	Entity::Initialise(upper);
+	Entity::Initialise(base);
 	return m_pUpperPipe->Initialise(upper) && m_pLowerPipe->Initialise(lower);
 }
 

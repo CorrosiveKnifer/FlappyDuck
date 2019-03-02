@@ -41,6 +41,10 @@ Game::Game()
 , m_countdownMax(1.0f)
 , m_pBoard(0)
 , m_highScore(0)
+, m_pStartText(0)
+, m_pScoreText(0)
+, m_pHighscoreText(0)
+, m_pRestartText(0)
 {
 
 }
@@ -63,22 +67,38 @@ Game::DestroyInstance()
 {
 	delete sm_pInstance;
 	sm_pInstance = 0;
-	
-	//delete m_pPlayerObject;
-	//m_pPlayerObject = 0;
+
 }
 
 Game::~Game()
 {
+	//Game Handlers
 	delete m_pBackBuffer;
 	m_pBackBuffer = 0;
-
 	delete m_pInputHandler;
 	m_pInputHandler = 0;
 
-	m_pPipeEntities->Clear();
+	//Entities
+	delete m_pPlayerObject;
+	m_pPlayerObject = 0;
+	delete m_pPlatform;
+	m_pPlatform = 0;
 	delete m_pPipeEntities;
 	m_pPipeEntities = 0;
+
+	//Sprites*
+	delete m_pBackgroundSprite;
+	m_pBackgroundSprite = 0;
+	delete m_pStartText;
+	m_pStartText = 0;
+	delete m_pScoreText;
+	m_pScoreText = 0;
+	delete m_pHighscoreText;
+	m_pHighscoreText = 0;
+	delete m_pRestartText;
+	m_pRestartText = 0;
+	delete m_pBoard;
+	m_pBoard = 0;
 }
 
 bool 
@@ -140,9 +160,10 @@ Game::Initialise()
 	m_pPipeEntities->Initialise();
 	
 	Pipes* p1 = new Pipes();
-	Sprite* temp1 = m_pBackBuffer->CreateTexture("assets\\pipe.png");
-	Sprite* temp2 = m_pBackBuffer->CreateTexture("assets\\pipe.png");
-	p1->Initialise(temp1, temp2);
+	Sprite* temp1 = m_pBackBuffer->CreateTexture("assets\\pipe.png"); //Base
+	Sprite* temp2 = m_pBackBuffer->CreateTexture("assets\\pipe.png"); //Upper
+	Sprite* temp3 = m_pBackBuffer->CreateTexture("assets\\pipe.png"); //Lower
+	p1->Initialise(temp1, temp2, temp3);
 	p1->SetGapSize(175);
 	p1->SetGapHeight(w); 
 	p1->SetPipeX(m_width + p1->GetWidth() / 2);
@@ -153,7 +174,8 @@ Game::Initialise()
 	Pipes* p2 = new Pipes();
 	temp1 = m_pBackBuffer->CreateTexture("assets\\pipe.png");
 	temp2 = m_pBackBuffer->CreateTexture("assets\\pipe.png");
-	p2->Initialise(temp1, temp2);
+	temp3 = m_pBackBuffer->CreateTexture("assets\\pipe.png");
+	p2->Initialise(temp1, temp2, temp3);
 	p2->SetGapSize(175);
 	p2->SetGapHeight(w);
 	p2->SetPipeX(m_width + p2->GetWidth() / 2);
@@ -414,7 +436,6 @@ Game::StartPipes()
 {
 	Pipes* p = m_pPipeEntities->GetVector().front();
 	p->SetDead(false);
-	//p->SetPipeX(m_width + p->GetWidth() / 2);
 }
 
 void 

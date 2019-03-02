@@ -8,7 +8,7 @@ class Pipes: public Entity
 public:
 	Pipes();
 	~Pipes();
-	bool Initialise(Sprite* upper, Sprite* lower);
+	bool Initialise(Sprite* base, Sprite* upper, Sprite* lower);
 	bool IsCollidingWith(Entity& e);
 
 	void IdleProcess(float deltaTime);

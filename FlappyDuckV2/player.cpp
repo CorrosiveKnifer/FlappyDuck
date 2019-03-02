@@ -4,10 +4,14 @@
 #include "backbuffer.h"
 
 Player::Player()
-: m_dAng(0)
+: m_dAng(160.0f)
 , MAX_ANGLE(90)
 , m_score(0)
+, m_isFalling(false)
 , m_idle_IsIncreasingAngle(false)
+, m_idle_MinAngle(-30.0f)
+, m_idle_MaxAngle(30.0f)
+, m_idle_AngleIncrement(35.0f)
 {
 
 }
@@ -22,10 +26,6 @@ Player::Initalise(Sprite* sprite)
 {
 	bool cond = Entity::Initialise(sprite);
 	m_d2y = 750.0f;
-	m_dAng = 160.0f;
-	m_idle_MaxAngle = 30.0f;
-	m_idle_MinAngle = -30.0f;
-	m_idle_AngleIncrement = 35.0f;
 	return cond;
 }
 

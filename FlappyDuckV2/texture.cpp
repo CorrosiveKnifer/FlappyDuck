@@ -7,17 +7,20 @@
 #include <cassert>
 
 Texture::Texture()
-: m_pTexture(0)
+: m_pRenderer(0)
+, m_pTexture(0)
 , m_height(0)
 , m_width(0)
 {
-	m_flip = SDL_FLIP_NONE;
+	
 }
 
 Texture::~Texture()
 {
 	SDL_DestroyTexture(m_pTexture);
 	m_pTexture = 0;
+
+	//m_pRenderer removed in backbuffer;
 }
 
 bool 

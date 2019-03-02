@@ -8,7 +8,8 @@
 #include <SDL_ttf.h>
 
 Message::Message()
-: m_pMessage(0)
+: m_pRenderer(0)
+, m_pMessage(0)
 , m_height(0)
 , m_width(0)
 {
@@ -19,6 +20,8 @@ Message::~Message()
 {
 	SDL_DestroyTexture(m_pMessage);
 	m_pMessage = 0;
+
+	//m_pRenderer removed in backbuffer;
 }
 
 bool

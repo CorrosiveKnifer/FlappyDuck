@@ -14,7 +14,24 @@ TextureManager::TextureManager()
 
 TextureManager::~TextureManager()
 {
+	
+	std::map<std::string, Texture*>::iterator iter = m_pLoadedTextures.begin();
+	while (iter != m_pLoadedTextures.end())
+	{
+		delete (iter->second);
+		iter++;
+	}
+	m_pLoadedTextures.clear();
 
+	std::map<std::string, Message*>::iterator iter2 = m_pMessageTextures.begin();
+	while (iter2 != m_pMessageTextures.end())
+	{
+		delete (iter2->second);
+		iter2++;
+	}
+	m_pMessageTextures.clear();
+
+	//m_pRenderer deleted in backbuffer;
 }
 
 bool 

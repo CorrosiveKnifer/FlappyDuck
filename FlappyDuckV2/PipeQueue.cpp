@@ -8,7 +8,13 @@ PipeQueue::PipeQueue()
 }
 PipeQueue::~PipeQueue()
 {
-
+	std::vector<Pipes*>::iterator iter = m_queue.begin();
+	while (iter != m_queue.end())
+	{
+		delete *iter;
+		iter++;
+	}
+	m_queue.clear();
 }
 
 bool 
@@ -51,10 +57,4 @@ PipeQueue::ActivateNextPipe()
 			return;
 		}
 	}
-}
-
-void 
-PipeQueue::Clear()
-{
-	m_queue.clear();
 }

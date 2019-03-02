@@ -22,7 +22,8 @@ Sprite::Sprite()
 
 Sprite::~Sprite()
 {
-
+	//m_pTexture deleted in TextureManager;
+	//m_pMessage deleted in TextureManager; 
 }
 
 bool 

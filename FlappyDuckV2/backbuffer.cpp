@@ -26,6 +26,9 @@ BackBuffer::BackBuffer()
 
 BackBuffer::~BackBuffer()
 {
+	delete m_pTextureManager;
+	m_pTextureManager = 0;
+
 	SDL_DestroyRenderer(m_pRenderer);
 	m_pRenderer = 0;
 
@@ -114,6 +117,9 @@ BackBuffer::CreateTexture(const char* pcFilename)
 	Sprite* pSprite = new Sprite();
 	pSprite->Initialise(*pTexture);
 
+	//Texture deleted in TextureManager;
+	//Sprite deleted in Entity;
+
 	return pSprite;
 }
 
@@ -126,6 +132,11 @@ BackBuffer::CreateMessage(std::string msg, int size)
 
 	Sprite* pSprite = new Sprite();
 	pSprite->Initialise(*pMessage);
+
+	//Message deleted in Sprite;
+	//Sprite deleted in Game;
+	TTF_CloseFont(pFont);
+
 	return pSprite;
 }
 

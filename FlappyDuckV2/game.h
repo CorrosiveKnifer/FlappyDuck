@@ -50,21 +50,25 @@ protected:
 	static Game* sm_pInstance;
 	BackBuffer* m_pBackBuffer;
 	InputHandler* m_pInputHandler;
-	bool m_looping;
+
+	int m_width;
+	int m_height;
 	int m_state;
+	int m_highScore;
+	bool m_looping;
 	bool m_countdown;
 	float m_countdownCurrent;
 	float m_countdownMax;
 
-	int m_highScore;
-
+	//Sprites
 	Sprite* m_pBackgroundSprite;
-	Sprite* m_pBoard;
+
+	//Entities
 	Player* m_pPlayerObject;
 	Platform* m_pPlatform;
 	PipeQueue* m_pPipeEntities;
 
-	// Simulation Counters:
+	//Simulation Counters:
 	float m_elapsedSeconds;
 	float m_lag;
 	float m_executionTime;
@@ -73,13 +77,13 @@ protected:
 	int m_FPS;
 	int m_numUpdates;
 	bool m_drawDebugInfo;
-	int m_width;
-	int m_height;
 
+	//Messages
 	Sprite* m_pStartText;
 	Sprite* m_pScoreText;
 	Sprite* m_pHighscoreText;
 	Sprite* m_pRestartText;
+	Sprite* m_pBoard;
 private:
 
 };
