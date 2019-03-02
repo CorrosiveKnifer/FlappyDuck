@@ -32,6 +32,11 @@ Entity::Initialise(Sprite* sprite)
 }
 
 void 
+Entity::IdleProcess(float deltaTime)
+{
+	//Do nothing
+}
+void 
 Entity::Process(float deltaTime)
 {
 	//TODO MOVEMENT
@@ -106,8 +111,27 @@ Entity::GetWidth()
 {
 	return m_pSprite->GetWidth();
 }
+
 int 
 Entity::GetHeight()
 {
 	return m_pSprite->GetHeight();
+}
+
+void 
+Entity::SetVerticalVelocity(int dx)
+{
+	m_dx = dx;
+}
+
+void
+Entity::SetHorizontalVelocity(int dy)
+{
+	m_dy = dy;
+}
+
+void
+Entity::SetAngle(float angle)
+{
+	m_pSprite->SetAngle(angle);
 }

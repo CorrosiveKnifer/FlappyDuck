@@ -20,8 +20,6 @@ BackBuffer::BackBuffer()
 , m_clearRed(0xFF)
 , m_clearGreen(0xFF)
 , m_clearBlue(0xFF)
-, m_pFont(0)
-, m_FontSize(46)
 {
 
 }
@@ -81,7 +79,6 @@ BackBuffer::Initialise(int width, int height)
 	m_pTextureManager->Initialise(m_pRenderer);
 
 	SDL_SetHint(SDL_HINT_RENDER_SCALE_QUALITY, "1");
-	m_pFont = TTF_OpenFont("assets\\OpenSans.ttf", m_FontSize);
 	m_fontColour = { 255, 255, 255 , 0};
 	return true;
 }
@@ -121,15 +118,14 @@ BackBuffer::CreateTexture(const char* pcFilename)
 }
 
 Sprite*
-BackBuffer::CreateMessage(std::string msg)
+BackBuffer::CreateMessage(std::string msg, int size)
 {
 	assert(m_pTextureManager);
-
-	Message* pMessage = m_pTextureManager->GetMessage(m_pFont, msg.c_str(), m_fontColour, m_FontSize);
+	TTF_Font* pFont = TTF_OpenFont("assets\\OpenSans.ttf", size);
+	Message* pMessage = m_pTextureManager->GetMessage(pFont, msg.c_str(), m_fontColour, size);
 
 	Sprite* pSprite = new Sprite();
 	pSprite->Initialise(*pMessage);
-
 	return pSprite;
 }
 

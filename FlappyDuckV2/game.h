@@ -1,6 +1,6 @@
 #pragma once
-// Local includes:
-#include <vector>
+// Library includes:
+//#include <vector>
 
 //Forward Declarations:
 class BackBuffer;
@@ -8,6 +8,9 @@ class Sprite;
 class Player;
 class InputHandler;
 class Entity;
+class Platform;
+class Pipes;
+class PipeQueue;
 
 class Game
 {
@@ -20,9 +23,17 @@ public:
 	bool Initialise();
 	bool GameLoop();
 	void Quit();
-	void PlayerFlutter();
+	void SpaceBar();
+	void RKey();
+	void StartPipes();
+	void RestartPipes(Pipes* p);
+	void Restart();
+	void CheckScoreUpdate();
+
 protected:
+	void IdleProcess(float deltaTime);
 	void Process(float deltaTime);
+	void ScoreProcess(float deltaTime);
 	void Draw(BackBuffer& backBuffer);
 
 private:
@@ -40,10 +51,18 @@ protected:
 	BackBuffer* m_pBackBuffer;
 	InputHandler* m_pInputHandler;
 	bool m_looping;
+	int m_state;
+	bool m_countdown;
+	float m_countdownCurrent;
+	float m_countdownMax;
+
+	int m_highScore;
 
 	Sprite* m_pBackgroundSprite;
+	Sprite* m_pBoard;
 	Player* m_pPlayerObject;
-	std::vector<Entity*> m_hitableEntities;
+	Platform* m_pPlatform;
+	PipeQueue* m_pPipeEntities;
 
 	// Simulation Counters:
 	float m_elapsedSeconds;
@@ -58,7 +77,9 @@ protected:
 	int m_height;
 
 	Sprite* m_pStartText;
-
+	Sprite* m_pScoreText;
+	Sprite* m_pHighscoreText;
+	Sprite* m_pRestartText;
 private:
 
 };

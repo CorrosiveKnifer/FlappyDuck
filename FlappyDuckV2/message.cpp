@@ -22,7 +22,7 @@ Message::~Message()
 }
 
 bool
-Message::Initialise(TTF_Font* pFont, const char* msg, SDL_Color rgb, int size, SDL_Renderer* pRenderer)
+Message::Initialise(TTF_Font* pFont, const char* msg, SDL_Color rgb, SDL_Renderer* pRenderer)
 {
 	m_pRenderer = pRenderer;
 	

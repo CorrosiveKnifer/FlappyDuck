@@ -51,6 +51,9 @@
     <ClCompile Include="Pipes.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="PipeQueue.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="backbuffer.h">
@@ -84,6 +87,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="pipes.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="PipeQueue.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

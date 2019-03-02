@@ -6,11 +6,15 @@
 #include "inputhandler.h"
 #include "platform.h"
 #include "pipes.h"
+#include "PipeQueue.h"
 
 // Library includes:
 #include <cassert>
 #include <SDL.h>
 #include <cstdio>
+#include <vector>
+#include <fstream>
+#include <sstream> 
 
 // Static Members:
 Game* Game::sm_pInstance = 0;
@@ -19,6 +23,8 @@ Game::Game()
 : m_pBackBuffer(0)
 , m_pInputHandler(0)
 , m_looping(true)
+, m_countdown(false)
+, m_state(0)
 , m_executionTime(0)
 , m_elapsedSeconds(0)
 , m_frameCount(0)
@@ -29,6 +35,12 @@ Game::Game()
 , m_pPlayerObject(0)
 , m_width(0)
 , m_height(0)
+, m_pPlatform(0)
+, m_pPipeEntities(0)
+, m_countdownCurrent(0.0f)
+, m_countdownMax(1.0f)
+, m_pBoard(0)
+, m_highScore(0)
 {
 
 }
@@ -64,7 +76,9 @@ Game::~Game()
 	delete m_pInputHandler;
 	m_pInputHandler = 0;
 
-	m_hitableEntities.clear();
+	m_pPipeEntities->Clear();
+	delete m_pPipeEntities;
+	m_pPipeEntities = 0;
 }
 
 bool 
@@ -89,29 +103,85 @@ Game::Initialise()
 	m_lag = 0.0f;
 	
 	m_pBackgroundSprite = m_pBackBuffer->CreateTexture("assets\\background.png");
+
+	m_pPlatform = new Platform();
+	m_pPlatform->Initialise(m_pBackBuffer->CreateTexture("assets\\platform.png"));
+	m_pPlatform->SetPositionY(736 - m_pPlatform->GetHeight());
+
 	m_pPlayerObject = new Player();
 	m_pPlayerObject->Initalise(m_pBackBuffer->CreateTexture("assets\\player.png"));
 	int w = (m_width - m_pPlayerObject->GetWidth()) / 2;
-	int h = (m_height - m_pPlayerObject->GetHeight()) / 2;
+	int h = ((m_height - m_pPlatform->GetHeight()) - m_pPlayerObject->GetHeight()) / 2;
 	m_pPlayerObject->SetPosition(w, h);
+	m_pPlayerObject->SetHorizontalVelocity(20);
 
-	Platform* p = new Platform();
-	p->Initialise(m_pBackBuffer->CreateTexture("assets\\platform.png"));
-	p->SetPositionY(736 - p->GetHeight());
-	m_hitableEntities.push_back(p);
+	std::ifstream scoreFile;
+	scoreFile.open("assets\\highscore.txt");
+	if (!scoreFile.is_open())
+	{
+		return false;
+	}
+	std::string scoreString;
+	getline(scoreFile, scoreString);
+	std::stringstream geek(scoreString);
+	geek >> m_highScore;
+	scoreFile.close();
 
-	m_pStartText = m_pBackBuffer->CreateMessage("0");
+	m_pStartText = m_pBackBuffer->CreateMessage("[Spacebar] to start", 24);
+	m_pStartText->SetCoords((m_width - m_pStartText->GetWidth()) / 2, 125);
+	m_pRestartText = m_pBackBuffer->CreateMessage("[R] to restart", 24);
+	m_pRestartText->SetCoords((m_width - m_pRestartText->GetWidth()) / 2, 500);
 
+	m_pScoreText = m_pBackBuffer->CreateMessage("0", 50);
+	m_pHighscoreText = m_pBackBuffer->CreateMessage(std::to_string(m_highScore), 50);
+	m_pHighscoreText->SetCoords((m_width - m_pHighscoreText->GetWidth()) / 2, 125 + m_pHighscoreText->GetHeight());
+
+	m_pPipeEntities = new PipeQueue();
+	m_pPipeEntities->Initialise();
+	
 	Pipes* p1 = new Pipes();
 	Sprite* temp1 = m_pBackBuffer->CreateTexture("assets\\pipe.png");
 	Sprite* temp2 = m_pBackBuffer->CreateTexture("assets\\pipe.png");
 	p1->Initialise(temp1, temp2);
 	p1->SetGapSize(175);
-	p1->SetGapHeight(w);
-	p1->SetPipeX(300);
-	m_hitableEntities.push_back(p1);
+	p1->SetGapHeight(w); 
+	p1->SetPipeX(m_width + p1->GetWidth() / 2);
+	p1->SetPipeVelocity(-175);
+	p1->SetDead(true);
+	m_pPipeEntities->Push_to_back(p1);
 
+	Pipes* p2 = new Pipes();
+	temp1 = m_pBackBuffer->CreateTexture("assets\\pipe.png");
+	temp2 = m_pBackBuffer->CreateTexture("assets\\pipe.png");
+	p2->Initialise(temp1, temp2);
+	p2->SetGapSize(175);
+	p2->SetGapHeight(w);
+	p2->SetPipeX(m_width + p2->GetWidth() / 2);
+	p2->SetPipeVelocity(-175);
+	p2->SetDead(true);
+	m_pPipeEntities->Push_to_back(p2);
+
+	m_pBoard = m_pBackBuffer->CreateTexture("assets\\scoreboard.png");
+	m_pBoard->SetCoords((m_width - m_pBoard->GetWidth()) / 2, 124);
 	return true;
+}
+
+void 
+Game::CheckScoreUpdate()
+{
+	if (m_highScore < m_pPlayerObject->GetScore())
+	{
+		m_highScore = m_pPlayerObject->GetScore();
+		delete m_pHighscoreText;
+		m_pHighscoreText =m_pBackBuffer->CreateMessage(std::to_string(m_highScore), 50);
+		m_pHighscoreText->SetCoords((m_width - m_pHighscoreText->GetWidth()) / 2, 125 + m_pHighscoreText->GetHeight());
+		std::ofstream highscoreFile("assets\\highscore.txt");
+		if (highscoreFile.is_open())
+		{
+			highscoreFile << std::to_string(m_highScore);
+		}
+		highscoreFile.close();
+	}
 }
 
 bool 
@@ -135,7 +205,18 @@ Game::GameLoop()
 
 		while (m_lag >= frame)
 		{
-			Process(frame);
+			switch (m_state)
+			{
+			case 0: //Idle
+				IdleProcess(frame);
+				break;
+			case 1: //Game
+				Process(frame);
+				break;
+			case 2: //ScoreDisplay
+				ScoreProcess(frame);
+				break;
+			}
 			m_lag -= frame;
 
 			++m_numUpdates;
@@ -144,6 +225,22 @@ Game::GameLoop()
 	}
 
 	return m_looping;
+}
+
+void
+Game::IdleProcess(float deltaTime)
+{
+	// Count total simulation time elapsed:
+	m_elapsedSeconds += deltaTime;
+
+	// Frame Counter:
+	if (m_elapsedSeconds > 1)
+	{
+		m_elapsedSeconds -= 1;
+		m_FPS = m_frameCount;
+		m_frameCount = 0;
+	}
+	m_pPlayerObject->IdleProcess(deltaTime);
 }
 
 void 
@@ -161,19 +258,60 @@ Game::Process(float deltaTime)
 	}
 
 	m_pPlayerObject->Process(deltaTime);
-
-	for (auto& entity : m_hitableEntities)
+	if (m_countdown)
 	{
-		if (entity->IsCollidingWith(*m_pPlayerObject))
+		m_countdownCurrent += deltaTime;
+		if(m_countdownCurrent >= m_countdownMax)
 		{
-			m_pPlayerObject->SetDead(true);
-		}
-		else 
-		{
-			entity->Process(deltaTime);
+			m_countdown = false;
+			m_countdownCurrent = 0;
+			StartPipes();
 		}
 	}
-	m_pStartText->SetCoords( (m_width - m_pStartText->GetWidth())/2, 125);
+	else
+	{
+		for (auto& pipes : m_pPipeEntities->GetVector())
+		{
+			if (pipes->IsCollidingWith(*m_pPlayerObject))
+			{
+				m_pPlayerObject->SetDead(true);
+				CheckScoreUpdate();
+				m_state = 2;
+			}
+			else
+			{
+				if (!pipes->IsDead())
+				{
+					pipes->Process(deltaTime);
+				}
+			}
+			if ((0 - pipes->GetWidth()) >= pipes->GetPositionX())
+			{
+				RestartPipes(pipes);
+			}
+			if (m_pPlayerObject->IsDead())
+			{
+				pipes->SetDead(true);
+			}
+		}
+		if (m_pPlatform->IsCollidingWith(*m_pPlayerObject))
+		{
+			m_pPlayerObject->SetDead(true);
+			CheckScoreUpdate();
+			m_state = 2;
+		}
+
+	}
+	
+	PlayerScores();
+
+	m_pScoreText->SetCoords( (m_width - m_pScoreText->GetWidth())/2, 125);
+}
+
+void 
+Game::ScoreProcess(float deltaTime)
+{
+	//Do nothing
 }
 
 void
@@ -184,16 +322,31 @@ Game::Draw(BackBuffer& backBuffer)
 	backBuffer.Clear();
 
 	backBuffer.DrawSprite(*m_pBackgroundSprite);
-
-	for (auto& entity : m_hitableEntities)
+	
+	m_pPlatform->Draw(backBuffer);
+	
+	for (auto& pipe : m_pPipeEntities->GetVector())
 	{
-		entity->Draw(backBuffer);
+		pipe->Draw(backBuffer);
 	}
 
 	m_pPlayerObject->Draw(backBuffer);
-
-	m_pStartText->Draw(backBuffer);
-
+	switch (m_state)
+	{
+	case 0: //Idle
+		m_pStartText->Draw(backBuffer);
+		break;
+	case 1: //Game
+		m_pScoreText->Draw(backBuffer);
+		break;
+	case 2: //Score display
+		m_pBoard->Draw(backBuffer);
+		m_pScoreText->Draw(backBuffer);
+		m_pHighscoreText->Draw(backBuffer);
+		m_pRestartText->Draw(backBuffer);
+		break;
+	}
+	
 	backBuffer.Present();
 }
 
@@ -204,18 +357,97 @@ Game::Quit()
 }
 
 void
-Game::PlayerFlutter()
+Game::SpaceBar()
 {
-	m_pPlayerObject->Flutter();
-	PlayerScores();
+	switch (m_state)
+	{
+	case 0: //Idle
+		m_pPlayerObject->SetHorizontalVelocity(0);
+		m_state = 1; //Switch state
+		m_countdown = true;
+		break;
+	case 1: //Game
+		m_pPlayerObject->Flutter();
+		break;
+	case 2: //Score display
+		break;
+	}
+
+}
+
+void
+Game::RKey()
+{
+	switch (m_state)
+	{
+	case 0: //Idle
+		break;
+	case 1: //Game
+		break;
+	case 2: //Score display
+		Restart();
+		break;
+	}
 }
 
 void
 Game::PlayerScores()
 {
-	m_pPlayerObject->Score();
-	Sprite* temp = m_pBackBuffer->CreateMessage(std::to_string(m_pPlayerObject->GetScore()));
-	temp->SetCoords((m_width - m_pStartText->GetWidth()) / 2, 125);
-	delete m_pStartText;
-	m_pStartText = temp;
+	for (auto& pipes : m_pPipeEntities->GetVector())
+	{
+		if (pipes->GetPositionX() <= (m_pPlayerObject->GetPositionX() - 50) && !pipes->HasBeenScored())
+		{
+ 			pipes->BeenScored(true);
+			m_pPlayerObject->Score();
+			Sprite* temp = m_pBackBuffer->CreateMessage(std::to_string(m_pPlayerObject->GetScore()), 50);
+			temp->SetCoords((m_width - m_pScoreText->GetWidth()) / 2, 125);
+			delete m_pScoreText;
+			m_pScoreText = temp;
+			
+			m_pPipeEntities->ActivateNextPipe();
+		}
+	}
+}
+
+void
+Game::StartPipes()
+{
+	Pipes* p = m_pPipeEntities->GetVector().front();
+	p->SetDead(false);
+	//p->SetPipeX(m_width + p->GetWidth() / 2);
+}
+
+void 
+Game::RestartPipes(Pipes* p)
+{
+	p->SetDead(true);
+	p->BeenScored(false);
+	p->SetPipeX(m_width + p->GetWidth() / 2);
+	//TODO: implement variance
+}
+
+void 
+Game::Restart()
+{
+	int w = (m_width - m_pPlayerObject->GetWidth()) / 2;
+	int h = ((m_height - m_pPlatform->GetHeight()) - m_pPlayerObject->GetHeight()) / 2;
+	m_pPlayerObject->SetPosition(w, h);
+	m_pPlayerObject->SetHorizontalVelocity(20);
+	m_pPlayerObject->SetAngle(0);
+	m_pPlayerObject->SetDead(false);
+	m_pPlayerObject->SetScore(0);
+	delete m_pScoreText;
+	m_pScoreText = m_pBackBuffer->CreateMessage("0", 50);
+
+	for (int i = 0; i < m_pPipeEntities->GetVector().size(); i++)
+	{
+		Pipes* p = m_pPipeEntities->GetVector().at(i);
+		p->SetGapSize(175);
+		p->SetGapHeight(w);
+		p->SetPipeX(m_width + p->GetWidth() / 2);
+		p->SetPipeVelocity(-175);
+		p->SetDead(true);
+	}
+
+	m_state = 0;
 }

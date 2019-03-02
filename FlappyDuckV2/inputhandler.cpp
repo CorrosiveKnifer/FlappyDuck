@@ -20,7 +20,7 @@ InputHandler::~InputHandler()
 bool 
 InputHandler::Initialise()
 {
-	return (true);
+	return true;
 }
 
 void 
@@ -35,7 +35,11 @@ InputHandler::ProcessInput(Game& game)
 		}
 		else if (e.key.keysym.scancode == SDL_SCANCODE_SPACE)
 		{
-			game.PlayerFlutter();
+			game.SpaceBar();
+		}
+		else if (e.key.keysym.scancode == SDL_SCANCODE_R)
+		{
+			game.RKey();
 		}
 	}
 }

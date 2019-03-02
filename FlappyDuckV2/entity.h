@@ -11,6 +11,7 @@ public:
 	~Entity();
 	bool Initialise(Sprite* sprite);
 
+	virtual void IdleProcess(float deltaTime);
 	virtual void Process(float deltaTime);
 	virtual void Draw(BackBuffer& backBuffer);
 
@@ -28,6 +29,11 @@ public:
 
 	int GetWidth();
 	int GetHeight();
+
+	void SetVerticalVelocity(int dx);
+	void SetHorizontalVelocity(int dy);
+
+	void SetAngle(float angle);
 protected:
 private:
 	Entity(const Entity& entity);

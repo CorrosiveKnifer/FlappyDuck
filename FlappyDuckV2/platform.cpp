@@ -11,6 +11,17 @@ Platform::~Platform()
 
 }
 
+void 
+Platform::IdleProcess(float deltaTime)
+{
+	Entity::Process(deltaTime);
+}
+void 
+Platform::Process(float deltaTime)
+{
+	Entity::Process(deltaTime);
+}
+
 bool 
 Platform::Initalise(Sprite* sprite)
 {

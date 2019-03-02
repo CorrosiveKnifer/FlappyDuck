@@ -54,7 +54,7 @@ TextureManager::GetMessage(TTF_Font* pFont, const char* msg, SDL_Color rgb, int 
 	{
 		// Not already loaded...
 		pMessage = new Message();
-		pMessage->Initialise(pFont, msg, rgb, size, m_pRenderer);
+		pMessage->Initialise(pFont, msg, rgb, m_pRenderer);
 		m_pMessageTextures[msg] = pMessage;
 	}
 	else

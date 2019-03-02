@@ -1,7 +1,9 @@
+// Local includes:
 #include "pipes.h"
 #include "entity.h"
 #include "sprite.h"
 
+// Library includes:
 #include <cassert>
 
 Pipes::Pipes()
@@ -9,6 +11,7 @@ Pipes::Pipes()
 	, m_pLowerPipe(0)
 	, m_gapSize(0)
 	, m_gapH(0)
+	, m_scoredUpon(false)
 {
 
 }
@@ -27,6 +30,7 @@ Pipes::Initialise(Sprite* upper, Sprite* lower)
 	upper->SetAngle(180);
 	m_pUpperPipe = new Entity();
 	m_pLowerPipe = new Entity();
+	Entity::Initialise(upper);
 	return m_pUpperPipe->Initialise(upper) && m_pLowerPipe->Initialise(lower);
 }
 
@@ -37,11 +41,18 @@ Pipes::IsCollidingWith(Entity& e)
 }
 
 void 
+Pipes::IdleProcess(float deltaTime)
+{
+	Pipes::Process(deltaTime);
+}
+
+void 
 Pipes::Process(float deltaTime)
 {
 	if (!m_dead) {
 		m_pUpperPipe->Process(deltaTime);
 		m_pLowerPipe->Process(deltaTime);
+		SetPositionX(m_pUpperPipe->GetPositionX());
 	}
 }
 
@@ -63,6 +74,7 @@ void
 Pipes::SetGapHeight(int cen_y)
 {
 	m_gapH = cen_y;
+	SetPositionY(cen_y);
 	UpdatePositions();
 }
 
@@ -70,6 +82,7 @@ void
 Pipes::SetPipeX(int x)
 {
 	m_pipeX = x;
+	SetPositionX(x);
 	UpdatePositions();
 }
 
@@ -90,5 +103,23 @@ Pipes::UpdatePositions()
 	y2 = m_gapH + (m_gapSize / 2);
 
 	m_pUpperPipe->SetPosition(x1, y1);
-	m_pLowerPipe->SetPosition(x2, y2);
+ 	m_pLowerPipe->SetPosition(x2, y2);
+}
+
+void 
+Pipes::SetPipeVelocity(int dx)
+{
+	m_pUpperPipe->SetVerticalVelocity(dx);
+	m_pLowerPipe->SetVerticalVelocity(dx);
+}
+
+bool Pipes::HasBeenScored()
+{
+	return m_scoredUpon;
+}
+
+void 
+Pipes::BeenScored(bool val)
+{
+	m_scoredUpon = val;
 }

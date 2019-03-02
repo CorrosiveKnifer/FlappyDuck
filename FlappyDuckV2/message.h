@@ -10,7 +10,7 @@ public:
 	Message();
 	~Message();
 
-	bool Initialise(TTF_Font* pFont, const char* msg, SDL_Color rgb, int size, SDL_Renderer* pRenderer);
+	bool Initialise(TTF_Font* pFont, const char* msg, SDL_Color rgb, SDL_Renderer* pRenderer);
 	
 	int GetWidth() const;
 	int GetHeight() const;

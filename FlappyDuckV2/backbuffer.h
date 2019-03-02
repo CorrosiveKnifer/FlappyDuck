@@ -21,9 +21,8 @@ public:
 	void Present();
 	void SetClearColour(unsigned char r, unsigned char g, unsigned char b);
 	Sprite* CreateTexture(const char* pcFilename);
-	Sprite* CreateMessage(std::string msg);
+	Sprite* CreateMessage(std::string msg, int size);
 	void DrawSprite(Sprite& sprite);
-	void RenderText(std::string msg, int x, int y);
 
 protected:
 
@@ -46,8 +45,6 @@ protected:
 	unsigned char m_clearGreen;
 	unsigned char m_clearBlue;
 
-	TTF_Font* m_pFont;
-	int m_FontSize;
 	SDL_Color m_fontColour;
 private:
 

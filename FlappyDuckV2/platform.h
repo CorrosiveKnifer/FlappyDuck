@@ -14,6 +14,8 @@ public:
 	~Platform();
 	bool Initalise(Sprite* sprite);
 
+	void IdleProcess(float deltaTime);
+	void Process(float deltaTime);
 	void Draw(BackBuffer& backBuffer);
 protected:
 private:
