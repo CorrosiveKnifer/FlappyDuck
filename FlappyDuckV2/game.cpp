@@ -204,7 +204,7 @@ Game::CheckScoreUpdate()
 		m_highScore = m_pPlayerObject->GetScore();
 		delete m_pHighscoreText;
 		m_pHighscoreText =m_pBackBuffer->CreateMessage(std::to_string(m_highScore), 50);
-		m_pHighscoreText->SetCoords((m_width - m_pHighscoreText->GetWidth()) / 2, 100 + m_pHighscoreText->GetHeight());
+		m_pHighscoreText->SetCoords((m_width - m_pHighscoreText->GetWidth()) / 2, 75 + m_pHighscoreText->GetHeight());
 		std::ofstream highscoreFile("assets\\highscore.txt");
 		if (highscoreFile.is_open())
 		{
