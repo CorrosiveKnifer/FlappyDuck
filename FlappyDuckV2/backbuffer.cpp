@@ -149,12 +149,23 @@ BackBuffer::DrawSprite(Sprite& sprite)
 	dest.y = sprite.GetY();
 	dest.w = sprite.GetWidth();
 	dest.h = sprite.GetHeight();
-	if (sprite.GetMessage() == 0)
+
+	SDL_RendererFlip flip;
+	if (sprite.GetFlip())
 	{
-		SDL_RenderCopyEx(m_pRenderer, sprite.GetTexture()->GetTexture(), 0, &dest, sprite.GetAngle(), NULL, SDL_FLIP_NONE);
+		flip = SDL_FLIP_HORIZONTAL;
 	}
 	else
 	{
-		SDL_RenderCopyEx(m_pRenderer, sprite.GetMessage()->GetTexture(), 0, &dest, sprite.GetAngle(), NULL, SDL_FLIP_NONE);
+		flip = SDL_FLIP_NONE;
+	}
+
+	if (sprite.GetMessage() == 0)
+	{
+		SDL_RenderCopyEx(m_pRenderer, sprite.GetTexture()->GetTexture(), 0, &dest, sprite.GetAngle(), NULL, flip);
+	}
+	else
+	{
+		SDL_RenderCopyEx(m_pRenderer, sprite.GetMessage()->GetTexture(), 0, &dest, sprite.GetAngle(), NULL, flip);
 	}
 }

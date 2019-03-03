@@ -42,7 +42,7 @@ private:
 
 	Game();
 
-	void PlayerScores();
+	void PipeChecks();
 	//Member Data:
 public:
 
@@ -55,6 +55,7 @@ protected:
 	int m_height;
 	int m_state;
 	int m_highScore;
+	int m_pipeGapSize;
 	bool m_looping;
 	bool m_countdown;
 	float m_countdownCurrent;

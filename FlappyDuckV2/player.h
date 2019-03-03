@@ -18,6 +18,8 @@ public:
 	void Draw(BackBuffer& backBuffer);
 	void Flutter();
 
+	void SetIdleBaseHeight(int base);
+
 	void Score();
 	void SetScore(int score);
 	int GetScore();
@@ -31,9 +33,9 @@ protected:
 	bool m_isFalling;
 	int m_score;
 
-	float m_idle_MinAngle;
-	float m_idle_MaxAngle;
-	float m_idle_AngleIncrement;
+	float m_idle_Min;
+	float m_idle_Max;
+	int m_idle_Base;
 	bool m_idle_IsIncreasingAngle;
 private:
 	const float MAX_ANGLE;

@@ -9,9 +9,9 @@ Player::Player()
 , m_score(0)
 , m_isFalling(false)
 , m_idle_IsIncreasingAngle(false)
-, m_idle_MinAngle(-30.0f)
-, m_idle_MaxAngle(30.0f)
-, m_idle_AngleIncrement(35.0f)
+, m_idle_Min(-25.0f)
+, m_idle_Max(25.0f)
+, m_idle_Base(0)
 {
 
 }
@@ -34,15 +34,13 @@ Player::IdleProcess(float deltaTime)
 {
 	if (m_idle_IsIncreasingAngle)
 	{
-		m_pSprite->SetAngle(m_pSprite->GetAngle() + (m_idle_AngleIncrement * deltaTime));
 		SetPositionY(GetPositionY() + (m_dy * deltaTime));
 	}
 	else
 	{
-		m_pSprite->SetAngle(m_pSprite->GetAngle() - (m_idle_AngleIncrement * deltaTime));
 		SetPositionY( GetPositionY() - ( m_dy * deltaTime));
 	}
-	if (m_pSprite->GetAngle() > m_idle_MaxAngle || m_pSprite->GetAngle() < m_idle_MinAngle)
+	if (m_pSprite->GetY() > (m_idle_Max + m_idle_Base) || m_pSprite->GetY() < (m_idle_Min + m_idle_Base))
 	{
 		m_idle_IsIncreasingAngle = !m_idle_IsIncreasingAngle;
 	}
@@ -74,11 +72,17 @@ Player::Draw(BackBuffer& backBuffer)
 	Entity::Draw(backBuffer);
 }
 
+void 
+Player::SetIdleBaseHeight(int base)
+{
+	m_idle_Base = base;
+}
+
 void
 Player::Flutter()
 {
-	m_pSprite->SetAngle(-45);
-	m_dy = -330;
+	m_pSprite->SetAngle(-40);
+	m_dy = -320;
 	m_dx = 0;
 }
 

@@ -3,6 +3,7 @@
 #include "pipes.h"
 
 PipeQueue::PipeQueue()
+	: m_waitingPipes(0)
 {
 
 }
@@ -30,7 +31,7 @@ PipeQueue::Push_to_back(Pipes* p)
 	if (pos >= m_queue.size())
 	{
 		m_queue.push_back(p);
-		
+		m_waitingPipes++;
 	}
 	else
 	{
@@ -54,7 +55,24 @@ PipeQueue::ActivateNextPipe()
 		if (pipes->IsDead())
 		{
 			pipes->SetDead(false);
+			m_waitingPipes--;
 			return;
 		}
 	}
+}
+
+void 
+PipeQueue::ResetPipe(Pipes* p, int x, int y)
+{
+	p->SetDead(true);
+	p->BeenScored(false);
+	p->SetPipeX(x);
+	p->SetGapHeight(y);
+	m_waitingPipes++;
+}
+
+bool 
+PipeQueue::HasPipeWaiting()
+{
+	return m_waitingPipes > 0;
 }

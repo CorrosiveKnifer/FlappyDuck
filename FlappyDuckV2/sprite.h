@@ -40,6 +40,8 @@ public:
 	Texture* GetTexture();
 	Message* GetMessage();
 
+	void SetFlip(bool flip);
+	bool GetFlip();
 protected:
 
 private:
@@ -62,6 +64,7 @@ protected:
 	int m_width;
 	int m_height;
 
+	bool m_flip;
 private:
 
 };

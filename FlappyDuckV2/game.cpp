@@ -15,6 +15,7 @@
 #include <vector>
 #include <fstream>
 #include <sstream> 
+#include <ctime>
 
 // Static Members:
 Game* Game::sm_pInstance = 0;
@@ -38,13 +39,14 @@ Game::Game()
 , m_pPlatform(0)
 , m_pPipeEntities(0)
 , m_countdownCurrent(0.0f)
-, m_countdownMax(1.0f)
+, m_countdownMax(2.0f)
 , m_pBoard(0)
 , m_highScore(0)
 , m_pStartText(0)
 , m_pScoreText(0)
 , m_pHighscoreText(0)
 , m_pRestartText(0)
+, m_pipeGapSize(175)
 {
 
 }
@@ -107,6 +109,8 @@ Game::Initialise()
 	m_width = 414;
 	m_height = 736;
 
+	srand(time(0));
+	
 	m_pBackBuffer = new BackBuffer();
 	if (!m_pBackBuffer->Initialise(m_width, m_height))
 	{
@@ -133,7 +137,8 @@ Game::Initialise()
 	int w = (m_width - m_pPlayerObject->GetWidth()) / 2;
 	int h = ((m_height - m_pPlatform->GetHeight()) - m_pPlayerObject->GetHeight()) / 2;
 	m_pPlayerObject->SetPosition(w, h);
-	m_pPlayerObject->SetHorizontalVelocity(20);
+	m_pPlayerObject->SetHorizontalVelocity(30);
+	m_pPlayerObject->SetIdleBaseHeight(h);
 
 	std::ifstream scoreFile;
 	scoreFile.open("assets\\highscore.txt");
@@ -148,7 +153,7 @@ Game::Initialise()
 	scoreFile.close();
 
 	m_pStartText = m_pBackBuffer->CreateMessage("[Spacebar] to start", 24);
-	m_pStartText->SetCoords((m_width - m_pStartText->GetWidth()) / 2, 125);
+	m_pStartText->SetCoords((m_width - m_pStartText->GetWidth()) / 2, 500);
 	m_pRestartText = m_pBackBuffer->CreateMessage("[R] to restart", 24);
 	m_pRestartText->SetCoords((m_width - m_pRestartText->GetWidth()) / 2, 500);
 
@@ -164,22 +169,25 @@ Game::Initialise()
 	Sprite* temp2 = m_pBackBuffer->CreateTexture("assets\\pipe.png"); //Upper
 	Sprite* temp3 = m_pBackBuffer->CreateTexture("assets\\pipe.png"); //Lower
 	p1->Initialise(temp1, temp2, temp3);
-	p1->SetGapSize(175);
+	p1->SetGapSize(m_pipeGapSize);
 	p1->SetGapHeight(w); 
 	p1->SetPipeX(m_width + p1->GetWidth() / 2);
-	p1->SetPipeVelocity(-175);
+	p1->SetPipeVelocity(-165);
 	p1->SetDead(true);
 	m_pPipeEntities->Push_to_back(p1);
+
+	int range = m_height - (m_pipeGapSize * 2);
+	int y = rand() % range + m_pipeGapSize; //(m_pipeGapSize) to (m_height - m_pipeGapSize)
 
 	Pipes* p2 = new Pipes();
 	temp1 = m_pBackBuffer->CreateTexture("assets\\pipe.png");
 	temp2 = m_pBackBuffer->CreateTexture("assets\\pipe.png");
 	temp3 = m_pBackBuffer->CreateTexture("assets\\pipe.png");
 	p2->Initialise(temp1, temp2, temp3);
-	p2->SetGapSize(175);
-	p2->SetGapHeight(w);
+	p2->SetGapSize(m_pipeGapSize);
+	p2->SetGapHeight(y);
 	p2->SetPipeX(m_width + p2->GetWidth() / 2);
-	p2->SetPipeVelocity(-175);
+	p2->SetPipeVelocity(-165);
 	p2->SetDead(true);
 	m_pPipeEntities->Push_to_back(p2);
 
@@ -316,16 +324,15 @@ Game::Process(float deltaTime)
 				pipes->SetDead(true);
 			}
 		}
-		if (m_pPlatform->IsCollidingWith(*m_pPlayerObject))
-		{
-			m_pPlayerObject->SetDead(true);
-			CheckScoreUpdate();
-			m_state = 2;
-		}
-
 	}
-	
-	PlayerScores();
+	if (m_pPlatform->IsCollidingWith(*m_pPlayerObject))
+	{
+		m_pPlayerObject->SetDead(true);
+		CheckScoreUpdate();
+		m_state = 2;
+	}
+
+	PipeChecks();
 
 	m_pScoreText->SetCoords( (m_width - m_pScoreText->GetWidth())/2, 125);
 }
@@ -413,11 +420,12 @@ Game::RKey()
 }
 
 void
-Game::PlayerScores()
+Game::PipeChecks()
 {
+	int p = m_pPlayerObject->GetPositionX() - 50;
 	for (auto& pipes : m_pPipeEntities->GetVector())
 	{
-		if (pipes->GetPositionX() <= (m_pPlayerObject->GetPositionX() - 50) && !pipes->HasBeenScored())
+		if (pipes->GetPositionX() <= p && !pipes->HasBeenScored())
 		{
  			pipes->BeenScored(true);
 			m_pPlayerObject->Score();
@@ -426,6 +434,9 @@ Game::PlayerScores()
 			delete m_pScoreText;
 			m_pScoreText = temp;
 			
+		}
+		if (pipes->GetPositionX() <= (p - 50) && m_pPipeEntities->HasPipeWaiting())
+		{
 			m_pPipeEntities->ActivateNextPipe();
 		}
 	}
@@ -441,10 +452,11 @@ Game::StartPipes()
 void 
 Game::RestartPipes(Pipes* p)
 {
-	p->SetDead(true);
-	p->BeenScored(false);
-	p->SetPipeX(m_width + p->GetWidth() / 2);
-	//TODO: implement variance
+	int x = m_width + p->GetWidth() / 2;
+	int range = m_height - (m_pipeGapSize * 2);
+	int y = rand() % range + m_pipeGapSize; //(m_pipeGapSize) to (m_height - m_pipeGapSize)
+
+	m_pPipeEntities->ResetPipe(p, x, y);
 }
 
 void 
@@ -463,11 +475,14 @@ Game::Restart()
 	for (int i = 0; i < m_pPipeEntities->GetVector().size(); i++)
 	{
 		Pipes* p = m_pPipeEntities->GetVector().at(i);
-		p->SetGapSize(175);
-		p->SetGapHeight(w);
-		p->SetPipeX(m_width + p->GetWidth() / 2);
-		p->SetPipeVelocity(-175);
-		p->SetDead(true);
+		if (i == 0)
+		{
+			m_pPipeEntities->ResetPipe(p, m_width + p->GetWidth() / 2, w);
+		}
+		else
+		{
+			RestartPipes(p);
+		}
 	}
 
 	m_state = 0;

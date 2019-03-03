@@ -31,6 +31,7 @@ Pipes::Initialise(Sprite* base, Sprite* upper, Sprite* lower)
 	upper->SetAngle(180);
 	m_pUpperPipe = new Entity();
 	m_pLowerPipe = new Entity();
+	upper->SetFlip(true);
 	Entity::Initialise(base);
 	return m_pUpperPipe->Initialise(upper) && m_pLowerPipe->Initialise(lower);
 }

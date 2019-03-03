@@ -16,6 +16,7 @@ Sprite::Sprite()
 , m_angle(0.0f)
 , m_centerX(0)
 , m_centerY(0)
+, m_flip(false)
 {
 
 }
@@ -153,4 +154,14 @@ int
 Sprite::GetHeight() const
 {
 	return m_height;
+}
+
+void 
+Sprite::SetFlip(bool flip)
+{
+	m_flip = flip;
+}
+bool Sprite::GetFlip()
+{
+	return m_flip;
 }
