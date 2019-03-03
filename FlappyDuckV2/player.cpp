@@ -12,6 +12,8 @@ Player::Player()
 , m_idle_Min(-25.0f)
 , m_idle_Max(25.0f)
 , m_idle_Base(0)
+, m_hitW(0)
+, m_hitH(0)
 {
 
 }
@@ -26,7 +28,17 @@ Player::Initalise(Sprite* sprite)
 {
 	bool cond = Entity::Initialise(sprite);
 	m_d2y = 750.0f;
+	m_hitW = m_pSprite->GetWidth() - 5;
+	m_hitH = m_pSprite->GetHeight() - 5;
 	return cond;
+}
+
+bool
+Player::IsCollidingWith(Entity& e)
+{
+	bool x = (e.GetPositionX() + e.GetWidth() >= m_x) && (m_x + m_hitW >= e.GetPositionX());
+	bool y = (e.GetPositionY() + e.GetHeight() >= m_y) && (m_y + m_hitH >= e.GetPositionY());
+	return x && y;
 }
 
 void 

@@ -159,7 +159,7 @@ Game::Initialise()
 
 	m_pScoreText = m_pBackBuffer->CreateMessage("0", 50);
 	m_pHighscoreText = m_pBackBuffer->CreateMessage(std::to_string(m_highScore), 50);
-	m_pHighscoreText->SetCoords((m_width - m_pHighscoreText->GetWidth()) / 2, 125 + m_pHighscoreText->GetHeight());
+	m_pHighscoreText->SetCoords((m_width - m_pHighscoreText->GetWidth()) / 2, 75 + m_pHighscoreText->GetHeight());
 
 	m_pPipeEntities = new PipeQueue();
 	m_pPipeEntities->Initialise();
@@ -192,7 +192,7 @@ Game::Initialise()
 	m_pPipeEntities->Push_to_back(p2);
 
 	m_pBoard = m_pBackBuffer->CreateTexture("assets\\scoreboard.png");
-	m_pBoard->SetCoords((m_width - m_pBoard->GetWidth()) / 2, 124);
+	m_pBoard->SetCoords((m_width - m_pBoard->GetWidth()) / 2, 74);
 	return true;
 }
 
@@ -204,7 +204,7 @@ Game::CheckScoreUpdate()
 		m_highScore = m_pPlayerObject->GetScore();
 		delete m_pHighscoreText;
 		m_pHighscoreText =m_pBackBuffer->CreateMessage(std::to_string(m_highScore), 50);
-		m_pHighscoreText->SetCoords((m_width - m_pHighscoreText->GetWidth()) / 2, 125 + m_pHighscoreText->GetHeight());
+		m_pHighscoreText->SetCoords((m_width - m_pHighscoreText->GetWidth()) / 2, 100 + m_pHighscoreText->GetHeight());
 		std::ofstream highscoreFile("assets\\highscore.txt");
 		if (highscoreFile.is_open())
 		{
@@ -334,7 +334,7 @@ Game::Process(float deltaTime)
 
 	PipeChecks();
 
-	m_pScoreText->SetCoords( (m_width - m_pScoreText->GetWidth())/2, 125);
+	m_pScoreText->SetCoords( (m_width - m_pScoreText->GetWidth())/2, 75);
 }
 
 void 

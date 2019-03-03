@@ -12,6 +12,7 @@ public:
 	Player();
 	~Player();
 	bool Initalise(Sprite* sprite);
+	bool IsCollidingWith(Entity& e);
 
 	void IdleProcess(float deltaTime);
 	void Process(float deltaTime);
@@ -32,6 +33,9 @@ protected:
 	float m_dAng;
 	bool m_isFalling;
 	int m_score;
+
+	int m_hitW;
+	int m_hitH;
 
 	float m_idle_Min;
 	float m_idle_Max;
