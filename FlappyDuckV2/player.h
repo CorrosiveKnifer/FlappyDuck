@@ -34,9 +34,6 @@ protected:
 	bool m_isFalling;
 	int m_score;
 
-	int m_hitW;
-	int m_hitH;
-
 	float m_idle_Min;
 	float m_idle_Max;
 	int m_idle_Base;

@@ -3,6 +3,9 @@
 #include "sprite.h"
 #include "backbuffer.h"
 
+// Library includes:
+#include <cmath>
+
 Player::Player()
 : m_dAng(160.0f)
 , MAX_ANGLE(90)
@@ -12,8 +15,6 @@ Player::Player()
 , m_idle_Min(-25.0f)
 , m_idle_Max(25.0f)
 , m_idle_Base(0)
-, m_hitW(0)
-, m_hitH(0)
 {
 
 }
@@ -28,17 +29,19 @@ Player::Initalise(Sprite* sprite)
 {
 	bool cond = Entity::Initialise(sprite);
 	m_d2y = 750.0f;
-	m_hitW = m_pSprite->GetWidth() - 5;
-	m_hitH = m_pSprite->GetHeight() - 5;
 	return cond;
 }
 
 bool
 Player::IsCollidingWith(Entity& e)
 {
-	bool x = (e.GetPositionX() + e.GetWidth() >= m_x) && (m_x + m_hitW >= e.GetPositionX());
-	bool y = (e.GetPositionY() + e.GetHeight() >= m_y) && (m_y + m_hitH >= e.GetPositionY());
-	return x && y;
+	double l = sqrt(pow(GetWidth() / 2, 2) / 2);
+	int x = m_x + (GetWidth() - l)/ 2;
+	int y = m_y + (GetHeight() - l) / 2;
+	bool condX = (e.GetPositionX() + e.GetWidth() >= m_x) && (m_x + l >= e.GetPositionX());
+	bool condY = (e.GetPositionY() + e.GetHeight() >= m_y) && (m_y + l >= e.GetPositionY());
+
+	return condX && condY;
 }
 
 void 
